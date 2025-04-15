@@ -58,7 +58,7 @@ public class Ab1Impl implements Ab1 {
 				}
 			}
 
-			// Array aufteilen und rekursiv die Teilarrays sortieren
+			// Rekursiv die einzelnen Bereiche des Arrays sortieren
 			quicksort(array, startIndex, indexKleiner - 1);   // Linker Bereich < Pivot
 			quicksort(array, indexGroesser + 1, endIndex);   // Rechter Bereich > Pivot
 		}

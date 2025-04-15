@@ -28,7 +28,7 @@ public interface Ab1 {
 	*
 	* @param array Das Array von Record-Objekten, das sortiert werden soll.
 	*/
-	public void sort(Record[] array);
+	void sort(Record[] array);
 
 	/**
 	 * Diese Methode verwendet Heaps, um zwei Arrays sortiert miteinander
@@ -48,7 +48,7 @@ public interface Ab1 {
 	 * @param h2    der zweite Min-Heap
 	 * @return Sortiertes, verschmolzenes Array beider Input-Arrays
 	 */
-	public Record[] merge(Record[] h1, Record[] h2);
+	Record[] merge(Record[] h1, Record[] h2);
 
 	/**
 	* Multipliziert zwei Oktalzahlen mithilfe des Karatsuba-Algorithmus.
