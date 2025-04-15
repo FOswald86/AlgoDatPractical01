@@ -8,21 +8,21 @@ public interface Ab1 {
 	/**
 	* Sortiert ein Array von Datensatz-Objekten mit QuickSort und Dutch
 	* National Flag-Modifikation, sowie Insertion Sort für kurze Arrays.
-	*
+	* <p>
 	* Zu implementieren ist der QuickSort-Algorithmus mit der "Dutch
 	* National Flag"-Modifikation (recherchieren Sie eigenständig; es wird
 	* bei der Pivotisierung in drei Teilmengen aufgeteilt: Elemente (a)
-	* kleiner, (b) gleich und (c) größer als das Pivotelement).
-	*
+	* kleiner, (b) gleich und (c) größer als das Pivot-Element).
+	* <p>
 	* Beinhaltet das (Sub-)Array weniger als 10 Elemente, so soll zum
 	* Sortieren Insertion Sort verwendet werden. Achten Sie darauf, dass
 	* Insertion Sort ein stabiles Sortierverfahren ist.
-	* 
+	* <p>
 	* Die Sortierreihenfolge ergibt sich aus dem Vergleich von
 	* Record-Objekten wie folgt:
 	*   - Primärschlüssel (key)
 	*   - Sekundärschlüssel (subkey), bei gleichem Primärschlüssel
-	*
+	* <p>
 	* Achten Sie darauf, dass Ihre Implementierung "in-place" arbeitet,
 	* d.h. nur O(1) zusätzlichen Speicher verwenden darf.
 	*

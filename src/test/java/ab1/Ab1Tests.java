@@ -9,13 +9,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class Ab1Tests {
 
-	private Random rand = new Random(System.currentTimeMillis());
+	private final Random rand = new Random(System.currentTimeMillis());
 
-	private static Ab1 ab1Impl = new Ab1Impl();
+	private static final Ab1 ab1Impl = new Ab1Impl();
 
-	private static int NUM_TESTS = 100;
-	private static int ARRAY_SIZE_SMALL = 1000;
-	private static int ARRAY_SIZE_LARGE = 10000;
+	private static final int NUM_TESTS = 100;
+	private static final int ARRAY_SIZE_SMALL = 1000;
+	private static final int ARRAY_SIZE_LARGE = 10000;
 
 	@Test
 	public void testSort() {
@@ -24,7 +24,7 @@ public class Ab1Tests {
 
 			ab1Impl.sort(data);
 
-			assertEquals(true, isSorted(data));
+            assertTrue(isSorted(data));
 		}
 	}
 
@@ -36,7 +36,7 @@ public class Ab1Tests {
 
 			Record[] data = ab1Impl.merge(h1, h2);
 
-			assertEquals(true, isSorted(data));
+            assertTrue(isSorted(data));
 		}
 	}
 
@@ -67,14 +67,14 @@ public class Ab1Tests {
 		Record[] arr = new Record[size];
 		for (int i = 0; i < size; ++i)
 			arr[i] = new Record(rand.nextInt(10),
-					    rand.nextInt((int)(size / 20)));
+					    rand.nextInt((size / 20)));
 		return arr;
 	}
 
 	private Record[] getRandomRecordHeap(int size) {
 		Record[] arr = new Record[size];
 		arr[0] = new Record(rand.nextInt(10),
-				    rand.nextInt((int)(size / 10)));
+				    rand.nextInt((size / 10)));
 		fillRandomRecordHeap(arr, 1);
 		return arr;
 	}
