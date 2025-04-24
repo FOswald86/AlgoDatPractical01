@@ -3,6 +3,8 @@ package ab1.impl.KassikLaferOswald;
 import ab1.Record;
 import ab1.Ab1;
 
+import java.util.Arrays;
+
 public class Ab1Impl implements Ab1 {
 
     //region QuickSort (mit Dutch National Flag Partitionierung) und InsertionSort - (Oswald)
@@ -127,8 +129,27 @@ public class Ab1Impl implements Ab1 {
 
     @Override
     public Record[] merge(Record[] h1, Record[] h2) {
-        //TODO: implement
-        return null;
+        Arrays.sort(h1, this::compare);
+        Arrays.sort(h2, this::compare);
+
+        // Jetzt mergen wie gehabt
+        int n1 = h1.length, n2 = h2.length;
+        Record[] result = new Record[n1 + n2];
+        int i = 0, j = 0, k = 0;
+
+        while (i < n1 && j < n2) {
+            if (compare(h1[i], h2[j]) <= 0) {
+                result[k++] = h1[i++];
+            } else {
+                result[k++] = h2[j++];
+            }
+        }
+
+        while (i < n1) result[k++] = h1[i++];
+        while (j < n2) result[k++] = h2[j++];
+
+        return result;
+
     }
 
     @Override
