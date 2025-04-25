@@ -129,16 +129,20 @@ public class Ab1Impl implements Ab1 {
 
     @Override
     public Record[] merge(Record[] h1, Record[] h2) {
-        // Schritt 1: Wandle beide Heaps (unsortiert, aber mit Heapstruktur) in sortierte Arrays um.
+        //Wandle beide Heaps in sortierte Arrays um.
         Record[] sorted1 = heapToSortedArray(h1);
         Record[] sorted2 = heapToSortedArray(h2);
 
-        // Schritt 2: Merge der beiden sortierten Arrays wie bei Merge-Sort.
+        //Merge der beiden sortierten Arrays
         Record[] result = new Record[sorted1.length + sorted2.length];
-        int i = 0, j = 0, k = 0;
+        int i = 0;  // Index für das erste sortierte Array
+        int j = 0;  // Index für das zweite sortierte Array
+        int k = 0;  // Index im Ergebnisarray
 
-        // Solange beide Arrays noch Elemente enthalten, wähle jeweils das kleinere der aktuellen Einträge.
+
+        // Solange beide Arrays noch Elemente enthalten, wähle jeweils das kleinere
         while (i < sorted1.length && j < sorted2.length) {
+            //Negativ wenn a < b, 0 wenn gleich, positiv wenn a > b
             if (compare(sorted1[i], sorted2[j]) <= 0) {
                 result[k++] = sorted1[i++]; // nimm Element aus sorted1
             } else {
@@ -147,12 +151,12 @@ public class Ab1Impl implements Ab1 {
         }
 
         // Wenn noch Reste in sorted1 sind, füge sie dem Ergebnis hinzu.
-        while (i < sorted1.length) {
+        while (i < sorted1.length) { // i - Index für erster Array
             result[k++] = sorted1[i++];
         }
 
         // Wenn noch Reste in sorted2 sind, füge sie dem Ergebnis hinzu.
-        while (j < sorted2.length) {
+        while (j < sorted2.length) { 
             result[k++] = sorted2[j++];
         }
 
