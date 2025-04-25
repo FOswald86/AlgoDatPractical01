@@ -129,28 +129,94 @@ public class Ab1Impl implements Ab1 {
 
     @Override
     public Record[] merge(Record[] h1, Record[] h2) {
-        Arrays.sort(h1, this::compare);
-        Arrays.sort(h2, this::compare);
+        // Schritt 1: Wandle beide Heaps (unsortiert, aber mit Heapstruktur) in sortierte Arrays um.
+        Record[] sorted1 = heapToSortedArray(h1);
+        Record[] sorted2 = heapToSortedArray(h2);
 
-        // Jetzt mergen wie gehabt
-        int n1 = h1.length, n2 = h2.length;
-        Record[] result = new Record[n1 + n2];
+        // Schritt 2: Merge der beiden sortierten Arrays wie bei Merge-Sort.
+        Record[] result = new Record[sorted1.length + sorted2.length];
         int i = 0, j = 0, k = 0;
 
-        while (i < n1 && j < n2) {
-            if (compare(h1[i], h2[j]) <= 0) {
-                result[k++] = h1[i++];
+        // Solange beide Arrays noch Elemente enthalten, wähle jeweils das kleinere der aktuellen Einträge.
+        while (i < sorted1.length && j < sorted2.length) {
+            if (compare(sorted1[i], sorted2[j]) <= 0) {
+                result[k++] = sorted1[i++]; // nimm Element aus sorted1
             } else {
-                result[k++] = h2[j++];
+                result[k++] = sorted2[j++]; // nimm Element aus sorted2
             }
         }
 
-        while (i < n1) result[k++] = h1[i++];
-        while (j < n2) result[k++] = h2[j++];
+        // Wenn noch Reste in sorted1 sind, füge sie dem Ergebnis hinzu.
+        while (i < sorted1.length) {
+            result[k++] = sorted1[i++];
+        }
 
+        // Wenn noch Reste in sorted2 sind, füge sie dem Ergebnis hinzu.
+        while (j < sorted2.length) {
+            result[k++] = sorted2[j++];
+        }
+
+        // Gib das finale, vollständig sortierte Array zurück.
         return result;
 
     }
+
+    private void heapifyDown(Record[] heap, int size, int i) {
+        while (true) {
+            int left = 2 * i + 1;
+            int right = 2 * i + 2;
+            int smallest = i;
+
+            // Vergleiche mit linkem Kind
+            if (left < size && compare(heap[left], heap[smallest]) < 0) {
+                smallest = left;
+            }
+
+            // Vergleiche mit rechtem Kind
+            if (right < size && compare(heap[right], heap[smallest]) < 0) {
+                smallest = right;
+            }
+
+            // Wenn Wurzel schon das kleinste Element ist, sind wir fertig
+            if (smallest == i) {
+                break;
+            }
+
+            // Tausche Element an Position i mit dem kleineren Kind
+            Record temp = heap[i];
+            heap[i] = heap[smallest];
+            heap[smallest] = temp;
+
+            // Fahre mit dem kleineren Kind weiter
+            i = smallest;
+        }
+    }
+
+    private Record[] heapToSortedArray(Record[] heap) {
+        // Erstelle eine Kopie, damit das Original nicht verändert wird.
+        Record[] copy = new Record[heap.length];
+        System.arraycopy(heap, 0, copy, 0, heap.length);
+
+        // Ergebnisarray, das am Ende sortiert zurückgegeben wird.
+        Record[] sorted = new Record[heap.length];
+
+        // Aktuelle Heapgröße (wird nach jedem Entfernen reduziert)
+        int size = heap.length;
+
+        // Wiederhole so oft wie es Elemente gibt:
+        // Hole immer das kleinste Element (Wurzel des Heaps), speichere es,
+        // ersetze es durch das letzte Element und repariere dann den Heap.
+        for (int i = 0; i < sorted.length; i++) {
+            sorted[i] = copy[0];             // Wurzel = Minimum
+            copy[0] = copy[size - 1];        // Ersetze Wurzel durch letztes Element
+            size--;                          // "Entferne" letztes Element
+            heapifyDown(copy, size, 0);      // Stelle Heap-Eigenschaft wieder her
+        }
+
+        return sorted;
+    }
+
+
 
     @Override
     public byte[] karatsuba(byte[] a, byte[] b) {
