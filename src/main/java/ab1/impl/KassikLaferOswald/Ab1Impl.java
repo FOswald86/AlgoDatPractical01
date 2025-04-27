@@ -3,8 +3,6 @@ package ab1.impl.KassikLaferOswald;
 import ab1.Record;
 import ab1.Ab1;
 
-import java.util.Arrays;
-
 public class Ab1Impl implements Ab1 {
 
     //region QuickSort (mit Dutch National Flag Partitionierung) und InsertionSort - (Oswald)
@@ -226,10 +224,10 @@ public class Ab1Impl implements Ab1 {
 
     @Override
     public byte[] karatsuba(byte[] a, byte[] b) {
-        a = trimLeadingZeros(a);
+        a = trimLeadingZeros(a); //Entfernung der Nullen
         b = trimLeadingZeros(b);
 
-        int n = Math.max(a.length, b.length);
+        int n = Math.max(a.length, b.length); //Herausfinden der Größeren Länge
 
         if (n == 1) {
             int result = a[0] * b[0];
