@@ -227,14 +227,15 @@ public class Ab1Impl implements Ab1 {
         a = trimLeadingZeros(a); //Entfernung der Nullen
         b = trimLeadingZeros(b);
 
-        int n = Math.max(a.length, b.length); //Herausfinden der Größeren Länge
+        int n = Math.max(a.length, b.length); //Herausfinden der größeren Länge
 
-        if (n == 1) {
+        if (n == 1) { //Wenn a.length oder b.length 1 ist, dann soll eine normale Multiplikation ausgeführt werden da karatsuba bei Zahlen > 1 byte angewand wird
             int result = a[0] * b[0];
             if (result < 8) return new byte[]{(byte) result};
             return new byte[]{(byte) (result / 8), (byte) (result % 8)};
         }
 
+        //Aufüllen des Arrays mit Nullen Bsp.: 54321 --> padLeft(54321,7) = 0054321
         if (a.length < n) a = padLeft(a, n);
         if (b.length < n) b = padLeft(b, n);
         if (n % 2 != 0) {
@@ -243,24 +244,26 @@ public class Ab1Impl implements Ab1 {
             n++;
         }
 
+        //Herausfinden der Hälfte
         int half = n / 2;
 
+        //Subarrays erstellen
         byte[] aHigh = subArray(a, 0, half);
         byte[] aLow = subArray(a, half, n);
         byte[] bHigh = subArray(b, 0, half);
         byte[] bLow = subArray(b, half, n);
 
-        Ab1Impl helper1 = new Ab1Impl();
-        Ab1Impl helper2 = new Ab1Impl();
-        Ab1Impl helper3 = new Ab1Impl();
-
-        byte[] ac = helper1.karatsuba(aHigh, bHigh);
-        byte[] bd = helper2.karatsuba(aLow, bLow);
-        byte[] abcd = helper3.karatsuba(add(aHigh, aLow), add(bHigh, bLow));
+        //Rekursiver Aufruf für alle 3 Einzel berechnungen
+        byte[] ac = this.karatsuba(aHigh, bHigh);
+        byte[] bd = this.karatsuba(aLow, bLow);
+        byte[] abcd = this.karatsuba(add(aHigh, aLow), add(bHigh, bLow));
+        //Substract
         byte[] adbc = subtract(subtract(abcd, ac), bd);
 
+        //Shiftleft Nuller werden am ende hinzugefügt 54321 --> shiftLeft(54321,2) = 5432100
         byte[] part1 = shiftLeft(ac, 2 * (n - half));
         byte[] part2 = shiftLeft(adbc, n - half);
+        //Alle teile miteinander Addieren
         return add(add(part1, part2), bd);
     }
 
