@@ -222,9 +222,117 @@ public class Ab1Impl implements Ab1 {
 
 
 
+    //region Karatsuba Oktal Multiplikation
+
     @Override
     public byte[] karatsuba(byte[] a, byte[] b) {
-        //TODO: implement
-        return null;
+        a = trimLeadingZeros(a);
+        b = trimLeadingZeros(b);
+
+        int n = Math.max(a.length, b.length);
+
+        if (n == 1) {
+            int result = a[0] * b[0];
+            if (result < 8) return new byte[]{(byte) result};
+            return new byte[]{(byte) (result / 8), (byte) (result % 8)};
+        }
+
+        if (a.length < n) a = padLeft(a, n);
+        if (b.length < n) b = padLeft(b, n);
+        if (n % 2 != 0) {
+            a = padLeft(a, n + 1);
+            b = padLeft(b, n + 1);
+            n++;
+        }
+
+        int half = n / 2;
+
+        byte[] aHigh = subArray(a, 0, half);
+        byte[] aLow = subArray(a, half, n);
+        byte[] bHigh = subArray(b, 0, half);
+        byte[] bLow = subArray(b, half, n);
+
+        Ab1Impl helper1 = new Ab1Impl();
+        Ab1Impl helper2 = new Ab1Impl();
+        Ab1Impl helper3 = new Ab1Impl();
+
+        byte[] ac = helper1.karatsuba(aHigh, bHigh);
+        byte[] bd = helper2.karatsuba(aLow, bLow);
+        byte[] abcd = helper3.karatsuba(add(aHigh, aLow), add(bHigh, bLow));
+        byte[] adbc = subtract(subtract(abcd, ac), bd);
+
+        byte[] part1 = shiftLeft(ac, 2 * (n - half));
+        byte[] part2 = shiftLeft(adbc, n - half);
+        return add(add(part1, part2), bd);
     }
+
+    // Hilfsmethoden
+
+    private static byte[] add(byte[] a, byte[] b) {
+        int maxLen = Math.max(a.length, b.length);
+        byte[] result = new byte[maxLen + 1];
+        int carry = 0;
+
+        for (int i = 0; i < result.length; i++) {
+            int ai = getDigit(a, a.length - 1 - i);
+            int bi = getDigit(b, b.length - 1 - i);
+            int sum = ai + bi + carry;
+            result[result.length - 1 - i] = (byte) (sum % 8);
+            carry = sum / 8;
+        }
+
+        return trimLeadingZeros(result);
+    }
+
+    private static byte[] subtract(byte[] a, byte[] b) {
+        byte[] result = new byte[a.length];
+        int borrow = 0;
+
+        for (int i = 0; i < result.length; i++) {
+            int ai = getDigit(a, a.length - 1 - i);
+            int bi = getDigit(b, b.length - 1 - i);
+            int diff = ai - bi - borrow;
+            if (diff < 0) {
+                diff += 8;
+                borrow = 1;
+            } else {
+                borrow = 0;
+            }
+            result[result.length - 1 - i] = (byte) diff;
+        }
+
+        return trimLeadingZeros(result);
+    }
+
+    private static byte[] padLeft(byte[] arr, int length) {
+        byte[] result = new byte[length];
+        System.arraycopy(arr, 0, result, length - arr.length, arr.length);
+        return result;
+    }
+
+    private static byte[] trimLeadingZeros(byte[] arr) {
+        int i = 0;
+        while (i < arr.length - 1 && arr[i] == 0) i++;
+        byte[] result = new byte[arr.length - i];
+        System.arraycopy(arr, i, result, 0, result.length);
+        return result;
+    }
+
+    private static byte[] shiftLeft(byte[] arr, int zeros) {
+        byte[] result = new byte[arr.length + zeros];
+        System.arraycopy(arr, 0, result, 0, arr.length);
+        return result;
+    }
+
+    private static int getDigit(byte[] arr, int index) {
+        if (index < 0 || index >= arr.length) return 0;
+        return arr[index];
+    }
+
+    private static byte[] subArray(byte[] arr, int from, int to) {
+        byte[] result = new byte[to - from];
+        System.arraycopy(arr, from, result, 0, result.length);
+        return result;
+    }
+    //endregion
 }

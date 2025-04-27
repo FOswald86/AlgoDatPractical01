@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="ab1.Ab1Tests" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-04-25T05:22:09" hostname="FLORIANLAPTOP" time="0.443">
+<testsuite name="ab1.Ab1Tests" tests="3" skipped="0" failures="0" errors="0" timestamp="2025-04-27T09:00:30" hostname="MBPvonCristoph2.fritz.box" time="0.456">
   <properties/>
-  <testcase name="testMerge()" classname="ab1.Ab1Tests" time="0.443"/>
+  <testcase name="testMerge()" classname="ab1.Ab1Tests" time="0.391"/>
+  <testcase name="testSort()" classname="ab1.Ab1Tests" time="0.046"/>
+  <testcase name="testMultiplication()" classname="ab1.Ab1Tests" time="0.015"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
