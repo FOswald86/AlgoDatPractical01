@@ -125,98 +125,132 @@ public class Ab1Impl implements Ab1 {
     }
     //endregion
 
+    /**
+     * Diese Methode merged zwei Heaps in ein gemeinsames sortiertes Array.
+     * Dabei werden beide Heaps zunächst sortiert und dan zusammengefügt
+     *
+     * @param h1 erste Heap
+     * @param h2 zweite Heap
+     * @return h1 mit h2 zusammengeführt
+     */
     @Override
     public Record[] merge(Record[] h1, Record[] h2) {
-        //Wandle beide Heaps in sortierte Arrays um.
+        // Wandelt beide Heaps in vollständig sortierte Arrays um
         Record[] sorted1 = heapToSortedArray(h1);
         Record[] sorted2 = heapToSortedArray(h2);
 
-        //Merge der beiden sortierten Arrays
+        // Erstellt ein neues Array mit Platz für alle Elemente aus beiden Arrays
         Record[] result = new Record[sorted1.length + sorted2.length];
-        int i = 0;  // Index für das erste sortierte Array
-        int j = 0;  // Index für das zweite sortierte Array
-        int k = 0;  // Index im Ergebnisarray
 
+        // Index i für sorted1, j für sorted2, k für das Ergebnis-Array
+        int i = 0;
+        int j = 0;
+        int k = 0;
 
-        // Solange beide Arrays noch Elemente enthalten, wähle jeweils das kleinere
+        // Solange beide Arrays noch nicht leer sind, vergleichen und das kleinere einfügen
         while (i < sorted1.length && j < sorted2.length) {
-            //Negativ wenn a < b, 0 wenn gleich, positiv wenn a > b
+            // compare gibt negativen Wert zurück, wenn sorted1[i] < sorted2[j]
             if (compare(sorted1[i], sorted2[j]) <= 0) {
-                result[k++] = sorted1[i++]; // nimm Element aus sorted1
+                result[k++] = sorted1[i++];  // Nächstes Element aus sorted1 nehmen
             } else {
-                result[k++] = sorted2[j++]; // nimm Element aus sorted2
+                result[k++] = sorted2[j++];  // Nächstes Element aus sorted2 nehmen
             }
         }
 
-        // Wenn noch Reste in sorted1 sind, füge sie dem Ergebnis hinzu.
-        while (i < sorted1.length) { // i - Index für erster Array
+        // Falls in sorted1 noch Elemente übrig sind, alle anhängen
+        while (i < sorted1.length) {
             result[k++] = sorted1[i++];
         }
 
-        // Wenn noch Reste in sorted2 sind, füge sie dem Ergebnis hinzu.
-        while (j < sorted2.length) { 
+        // Dasselbe für sorted2
+        while (j < sorted2.length) {
             result[k++] = sorted2[j++];
         }
 
-        // Gib das finale, vollständig sortierte Array zurück.
+        // Das finale, komplett sortierte Array wird zurückgegeben
         return result;
-
     }
 
+
+    /**
+     * Diese Methode sorgt dafür, dass die Heapeigenschaft nach unten wiederhergestellt wird
+     *
+     * @param heap Das Array, das den Heap repräsentiert
+     * @param size Die tatsächliche Größe des Heaps
+     * @param i Der Index, bei dem die Überprüfung starten soll
+     */
     private void heapifyDown(Record[] heap, int size, int i) {
         while (true) {
+            // Berechne die Indizes der linken und rechten Kindknoten
             int left = 2 * i + 1;
             int right = 2 * i + 2;
-            int smallest = i;
+            int smallest = i; // nehme an, das aktuelle Element ist das kleinste
 
-            // Vergleiche mit linkem Kind
+            // Wenn das linke Kind existiert und kleiner ist als das aktuelle kleinste,
+            // dann aktualisiere den Index des kleinsten Elements
             if (left < size && compare(heap[left], heap[smallest]) < 0) {
                 smallest = left;
             }
 
-            // Vergleiche mit rechtem Kind
+            // Dasselbe mit dem rechten Kind
             if (right < size && compare(heap[right], heap[smallest]) < 0) {
                 smallest = right;
             }
 
-            // Wenn Wurzel schon das kleinste Element ist, sind wir fertig
+            // Wenn das aktuelle Element schon das kleinste ist, ist der Heap korrekt
             if (smallest == i) {
                 break;
             }
 
-            // Tausche Element an Position i mit dem kleineren Kind
+            // Ansonsten tausche das aktuelle Element mit dem kleineren Kind
             Record temp = heap[i];
             heap[i] = heap[smallest];
             heap[smallest] = temp;
 
-            // Fahre mit dem kleineren Kind weiter
+            // Fahre mit dem kleineren Kind weiter, da dort jetzt evtl. ein Fehler vorliegt
             i = smallest;
         }
     }
 
-    private Record[] heapToSortedArray(Record[] heap) {
-        // Erstelle eine Kopie, damit das Original nicht verändert wird.
-        Record[] copy = new Record[heap.length];
-        System.arraycopy(heap, 0, copy, 0, heap.length);
 
-        // Ergebnisarray, das am Ende sortiert zurückgegeben wird.
+    /**
+     * Wandelt ein Min-Heap-Array in ein sortiertes Array um (aufsteigend)
+     * Dabei wird das Original nicht verändert – es wird mit einer Kopie gearbeitet
+     *
+     * @param heap Das ursprüngliche Heap-Array (Min-Heap)
+     * @return Ein sortiertes Array mit denselben Elementen
+     */
+    private Record[] heapToSortedArray(Record[] heap) {
+        // Erstelle eine Kopie vom Heap, damit das Original nicht verändert wird
+        Record[] copy = new Record[heap.length];
+        // Array, in dem das sortierte Ergebnis gesammelt wird
         Record[] sorted = new Record[heap.length];
 
-        // Aktuelle Heapgröße (wird nach jedem Entfernen reduziert)
+        /*
+         * System.arraycopy Erklärung:
+         * - heap: Quell-Array
+         * - 0: Startindex im Quell-Array
+         * - copy: Ziel-Array
+         * - 0: Startindex im Ziel-Array
+         * - heap.length: Anzahl der Elemente, die kopiert werden
+         */
+        System.arraycopy(heap, 0, copy, 0, heap.length);
+
+        // size ist die aktuelle Heapgröße – wird nach jedem Entfernen kleiner
         int size = heap.length;
 
-        // Wiederhole so oft wie es Elemente gibt:
-        // Hole immer das kleinste Element (Wurzel des Heaps), speichere es,
-        // ersetze es durch das letzte Element und repariere dann den Heap.
+        // Wiederhole so oft, wie es Elemente im Heap gibt
         for (int i = 0; i < sorted.length; i++) {
-            sorted[i] = copy[0];             // Wurzel = Minimum
-            copy[0] = copy[size - 1];        // Ersetze Wurzel durch letztes Element
-            size--;                          // "Entferne" letztes Element
-            heapifyDown(copy, size, 0);      // Stelle Heap-Eigenschaft wieder her
+            sorted[i] = copy[0];              // Nimm das kleinste Element (Wurzel)
+            copy[0] = copy[size - 1];         // Ersetze die Wurzel mit dem letzten Element im Heap
+            size--;                           // "Entferne" das letzte Element aus dem Heap
+            heapifyDown(copy, size, 0);       // Stelle die Heapeigenschaft wieder her (ab Wurzel)
         }
 
+        // Gib das vollständig sortierte Array zurück
         return sorted;
     }
+
 
 
 
