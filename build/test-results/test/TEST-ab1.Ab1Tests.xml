@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="ab1.Ab1Tests" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-05-02T06:49:28" hostname="FLORIANLAPTOP" time="0.433">
+<testsuite name="ab1.Ab1Tests" tests="3" skipped="0" failures="0" errors="0" timestamp="2025-05-03T11:29:01" hostname="MacBook-Pro-von-Christoph-2.local" time="0.47">
   <properties/>
-  <testcase name="testMerge()" classname="ab1.Ab1Tests" time="0.433"/>
+  <testcase name="testMerge()" classname="ab1.Ab1Tests" time="0.401"/>
+  <testcase name="testSort()" classname="ab1.Ab1Tests" time="0.047"/>
+  <testcase name="testMultiplication()" classname="ab1.Ab1Tests" time="0.017"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

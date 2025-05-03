@@ -252,57 +252,93 @@ public class Ab1Impl implements Ab1 {
     }
 
 
-
-
     //region Karatsuba Oktal Multiplikation
 
-    @Override
+    /**
+     * Führt eine Multiplikation zweier Oktalzahlen durch, die als Byte-Arrays
+     * repräsentiert sind. Nutzt das Karatsuba-Verfahren zur effizienten
+     * Multiplikation großer Zahlen.
+     * Beispiel: [1, 3] (Oktal 13 = Dezimal 11) * [2, 1] (Oktal 21 = Dezimal 17)
+     * ergibt [2, 7, 3] (Oktal 273 = Dezimal 187)
+     */
     public byte[] karatsuba(byte[] a, byte[] b) {
-        a = trimLeadingZeros(a); //Entfernung der Nullen
-        b = trimLeadingZeros(b);
-
-        int n = Math.max(a.length, b.length); //Herausfinden der größeren Länge
-
-        if (n == 1) { //Wenn a.length oder b.length 1 ist, dann soll eine normale Multiplikation ausgeführt werden da karatsuba bei Zahlen > 1 byte angewand wird
-            int result = a[0] * b[0];
-            if (result < 8) return new byte[]{(byte) result};
-            return new byte[]{(byte) (result / 8), (byte) (result % 8)};
+        // Eingabevalidierung
+        if (!isValidOctal(a) || !isValidOctal(b)) {
+            throw new IllegalArgumentException("Nur Oktalziffern (0–7) erlaubt.");
         }
 
-        //Aufüllen des Arrays mit Nullen Bsp.: 54321 --> padLeft(54321,7) = 0054321
+        // Entferne führende Nullen
+        a = trimLeadingZeros(a);
+        b = trimLeadingZeros(b);
+
+        int n = Math.max(a.length, b.length); // maximale Länge ermitteln
+
+        // Basisfall: beide Arrays sind einstellig
+        // Beispiel: [3] * [2] = [6], [5] * [5] = 25 → Oktal 31 → [3, 1]
+        if (n == 1) {
+            int result = a[0] * b[0];
+
+            // Java führt alle Rechnungen dezimal aus – auch bei Oktalwerten.
+            // Daher ist das Ergebnis hier eine Dezimalzahl und muss in Oktal zerlegt werden.
+            if (result < 8) {
+                return new byte[]{(byte) result};
+            }
+
+            // Beispiel: 25 → 25 / 8 = 3, 25 % 8 = 1 → [3, 1]
+            return new byte[]{
+                    (byte) (result / 8),
+                    (byte) (result % 8)
+            };
+        }
+
+        // Padding auf gleiche Länge
         if (a.length < n) a = padLeft(a, n);
         if (b.length < n) b = padLeft(b, n);
+
+        // Falls n ungerade ist, auf gerade erhöhen
         if (n % 2 != 0) {
             a = padLeft(a, n + 1);
             b = padLeft(b, n + 1);
             n++;
         }
 
-        //Herausfinden der Hälfte
         int half = n / 2;
 
-        //Subarrays erstellen
+        // Zerlegung in High/Low
         byte[] aHigh = subArray(a, 0, half);
         byte[] aLow = subArray(a, half, n);
         byte[] bHigh = subArray(b, 0, half);
         byte[] bLow = subArray(b, half, n);
 
-        //Rekursiver Aufruf für alle 3 Einzel berechnungen
-        byte[] ac = this.karatsuba(aHigh, bHigh);
-        byte[] bd = this.karatsuba(aLow, bLow);
-        byte[] abcd = this.karatsuba(add(aHigh, aLow), add(bHigh, bLow));
-        //Substract
+        // Karatsuba-Teilschritte
+        byte[] ac = karatsuba(aHigh, bHigh);
+        byte[] bd = karatsuba(aLow, bLow);
+        byte[] abcd = karatsuba(add(aHigh, aLow), add(bHigh, bLow));
         byte[] adbc = subtract(subtract(abcd, ac), bd);
 
-        //Shiftleft Nuller werden am ende hinzugefügt 54321 --> shiftLeft(54321,2) = 5432100
+        // Stellenverschiebung im Oktalsystem
         byte[] part1 = shiftLeft(ac, 2 * (n - half));
         byte[] part2 = shiftLeft(adbc, n - half);
-        //Alle teile miteinander Addieren
+
+        // Endergebnis zusammensetzen
         return add(add(part1, part2), bd);
     }
 
-    // Hilfsmethoden
+    /**
+     * Prüft, ob alle Ziffern gültige Oktalwerte (0–7) sind.
+     * Beispiel: [1, 5, 0] → gültig, [1, 8] → ungültig
+     */
+    private static boolean isValidOctal(byte[] arr) {
+        for (byte b : arr) {
+            if (b < 0 || b > 7) return false;
+        }
+        return true;
+    }
 
+    /**
+     * Addiert zwei Oktalzahlen.
+     * Beispiel: [1, 6] + [2, 1] = [3, 7]
+     */
     private static byte[] add(byte[] a, byte[] b) {
         int maxLen = Math.max(a.length, b.length);
         byte[] result = new byte[maxLen + 1];
@@ -319,6 +355,11 @@ public class Ab1Impl implements Ab1 {
         return trimLeadingZeros(result);
     }
 
+    /**
+     * Subtrahiert b von a.
+     * Voraussetzung: a ≥ b
+     * Beispiel: [5, 2] - [3, 1] = [2, 1]
+     */
     private static byte[] subtract(byte[] a, byte[] b) {
         byte[] result = new byte[a.length];
         int borrow = 0;
@@ -327,24 +368,34 @@ public class Ab1Impl implements Ab1 {
             int ai = getDigit(a, a.length - 1 - i);
             int bi = getDigit(b, b.length - 1 - i);
             int diff = ai - bi - borrow;
+
             if (diff < 0) {
                 diff += 8;
                 borrow = 1;
             } else {
                 borrow = 0;
             }
+
             result[result.length - 1 - i] = (byte) diff;
         }
 
         return trimLeadingZeros(result);
     }
 
+    /**
+     * Fügt führende Nullen hinzu.
+     * Beispiel: padLeft([3, 4], 4) → [0, 0, 3, 4]
+     */
     private static byte[] padLeft(byte[] arr, int length) {
         byte[] result = new byte[length];
         System.arraycopy(arr, 0, result, length - arr.length, arr.length);
         return result;
     }
 
+    /**
+     * Entfernt führende Nullen.
+     * Beispiel: [0, 0, 5, 3] → [5, 3]
+     */
     private static byte[] trimLeadingZeros(byte[] arr) {
         int i = 0;
         while (i < arr.length - 1 && arr[i] == 0) i++;
@@ -353,21 +404,40 @@ public class Ab1Impl implements Ab1 {
         return result;
     }
 
+    /**
+     * Verschiebt Array nach links (Oktalstellen).
+     * Beispiel: shiftLeft([2, 3], 2) → [2, 3, 0, 0]
+     */
     private static byte[] shiftLeft(byte[] arr, int zeros) {
         byte[] result = new byte[arr.length + zeros];
         System.arraycopy(arr, 0, result, 0, arr.length);
         return result;
     }
 
+    /**
+     * Gibt Ziffer an Position index zurück oder 0, wenn ungültig.
+     * Beispiel: getDigit([1, 2, 3], -1) → 0
+     */
     private static int getDigit(byte[] arr, int index) {
         if (index < 0 || index >= arr.length) return 0;
         return arr[index];
     }
 
+    /**
+     * Gibt ein Teilarray zurück.
+     * Beispiel: subArray([1, 2, 3, 4], 1, 3) → [2, 3]
+     */
     private static byte[] subArray(byte[] arr, int from, int to) {
         byte[] result = new byte[to - from];
         System.arraycopy(arr, from, result, 0, result.length);
         return result;
     }
+
     //endregion
+
+
+
+
+
+
 }
