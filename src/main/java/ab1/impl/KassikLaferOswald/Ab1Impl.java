@@ -177,7 +177,7 @@ public class Ab1Impl implements Ab1 {
      *
      * @param heap Das Array, das den Heap repräsentiert
      * @param size Die tatsächliche Größe des Heaps
-     * @param i Der Index, bei dem die Überprüfung starten soll
+     * @param i    Der Index, bei dem die Überprüfung starten soll
      */
     private void heapifyDown(Record[] heap, int size, int i) {
         while (true) {
