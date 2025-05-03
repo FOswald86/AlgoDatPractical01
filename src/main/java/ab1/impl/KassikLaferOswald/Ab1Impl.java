@@ -252,7 +252,7 @@ public class Ab1Impl implements Ab1 {
     }
 
 
-    //region Karatsuba Oktal Multiplikation
+    //region Karatsuba Oktal Multiplikation (Lafer)
 
     /**
      * Führt eine Multiplikation zweier Oktalzahlen durch, die als Byte-Arrays
