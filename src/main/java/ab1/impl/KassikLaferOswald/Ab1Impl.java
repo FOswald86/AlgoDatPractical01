@@ -125,6 +125,8 @@ public class Ab1Impl implements Ab1 {
     }
     //endregion
 
+    //region merge
+
     /**
      * Diese Methode merged zwei Heaps in ein gemeinsames sortiertes Array.
      * Dabei werden beide Heaps zunächst sortiert und dan zusammengefügt
@@ -244,7 +246,7 @@ public class Ab1Impl implements Ab1 {
             sorted[i] = copy[0];              // Nimm das kleinste Element (Wurzel)
             copy[0] = copy[size - 1];         // Ersetze die Wurzel mit dem letzten Element im Heap
             size--;                           // "Entferne" das letzte Element aus dem Heap
-            heapifyDown(copy, size, 0);       // Stelle die Heapeigenschaft wieder her (ab Wurzel)
+            heapifyDown(copy, size, 0);    // Stelle die Heapeigenschaft wieder her (ab Wurzel)
         }
 
         // Gib das vollständig sortierte Array zurück
@@ -252,7 +254,7 @@ public class Ab1Impl implements Ab1 {
     }
 
 
-
+    //endregion merge
 
     //region Karatsuba Oktal Multiplikation
 
