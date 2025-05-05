@@ -219,22 +219,22 @@ public class Ab1Impl implements Ab1 {
      * Wandelt ein Min-Heap-Array in ein sortiertes Array um (aufsteigend)
      * Dabei wird das Original nicht verändert – es wird mit einer Kopie gearbeitet
      *
-     * @param heap Das ursprüngliche Heap-Array (Min-Heap)
+     * @param heap Der ursprüngliche Heap
      * @return Ein sortiertes Array mit denselben Elementen
      */
     private Record[] heapToSortedArray(Record[] heap) {
         // Erstelle eine Kopie vom Heap, damit das Original nicht verändert wird
         Record[] copy = new Record[heap.length];
         // Array, in dem das sortierte Ergebnis gesammelt wird
-        Record[] sorted = new Record[heap.length];
+        Record[] sortedArray = new Record[heap.length];
 
         /*
-         * System.arraycopy Erklärung:
-         * - heap: Quell-Array
-         * - 0: Startindex im Quell-Array
-         * - copy: Ziel-Array
-         * - 0: Startindex im Ziel-Array
-         * - heap.length: Anzahl der Elemente, die kopiert werden
+          System.arraycopy Erklärung:
+          heap: Quell-Array
+          0: Startindex im Quell-Array
+          copy: Ziel-Array
+          0: Startindex im Ziel-Array
+          heap.length: Anzahl der Elemente, die kopiert werden
          */
         System.arraycopy(heap, 0, copy, 0, heap.length);
 
@@ -242,15 +242,15 @@ public class Ab1Impl implements Ab1 {
         int size = heap.length;
 
         // Wiederhole so oft, wie es Elemente im Heap gibt
-        for (int i = 0; i < sorted.length; i++) {
-            sorted[i] = copy[0];              // Nimm das kleinste Element (Wurzel)
+        for (int i = 0; i < sortedArray.length; i++) {
+            sortedArray[i] = copy[0];              // Nimm das kleinste Element (Wurzel)
             copy[0] = copy[size - 1];         // Ersetze die Wurzel mit dem letzten Element im Heap
             size--;                           // "Entferne" das letzte Element aus dem Heap
             heapifyDown(copy, size, 0);    // Stelle die Heapeigenschaft wieder her (ab Wurzel)
         }
 
         // Gib das vollständig sortierte Array zurück
-        return sorted;
+        return sortedArray;
     }
 
 
